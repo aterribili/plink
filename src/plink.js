@@ -7,17 +7,23 @@ import {
   Dimensions,
   TouchableHighlight,
 } from 'react-native';
+import Header from './header';
 import Pause from './Pause';
 import Ball, { BALL_WIDTH, BALL_HEIGHT } from './ball';
-import { generateRandomPosition } from './position';
+import { SCREEN_WIDTH, generateRandomPosition, SCREEN_HEIGHT } from './position';
+
+const STATUSBAR_HEIGHT = 20;
+const HEADER_HEIGHT = 50;
 
 function generatePosition() {
-  const position = generateRandomPosition(BALL_WIDTH, BALL_HEIGHT - 30);
+  const position = generateRandomPosition(BALL_WIDTH, BALL_HEIGHT);
+  const top = position.top - (HEADER_HEIGHT + STATUSBAR_HEIGHT);
+  const left = position.left;
 
   return {
     position: 'absolute',
-    top: position.top >= 0 ? position.top : 0,
-    left: position.left >= 0 ? position.left : 0,
+    top: top >= 0 ? top : 0,
+    left: left >= 0 ? left : 0,
     right: 0,
     bottom: 0,
   };
@@ -89,13 +95,12 @@ export default class Plink extends Component {
     const { pause, currentPosition, score, error } = this.state;
     return (
       <View style={ { flex: 1 } }>
-        <View style={ styles.header }>
-        <Text style={ styles.errors }>Error: {error}</Text>
-        <Text style={ styles.text }>Score: {score}</Text>
-        <TouchableHighlight onPress={ this.onPause.bind(this) } style={ styles.pause }>
-          <Text>Pause</Text>
-        </TouchableHighlight>
-        </View>
+        <Header
+          style={ styles.header }
+          errorCount={ error }
+          scoreCount={ score }
+          onPressPause={ this.onPause.bind(this) }
+        />
         <View style={{ flex: 0.9 }}>
           {this.renderContainer(pause, currentPosition)}
         </View>
@@ -106,19 +111,10 @@ export default class Plink extends Component {
 
 const styles = StyleSheet.create({
   header: {
-    height: 50,
+    height: HEADER_HEIGHT,
     marginTop: 20,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
     paddingLeft: 20,
     paddingRight: 20,
   },
-  text: {
-    fontSize: 20,
-  },
-  errors: {
-    color: 'red',
-    fontSize: 16,
-  }
 });
 

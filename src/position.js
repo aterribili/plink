@@ -1,8 +1,8 @@
 import { Dimensions } from 'react-native';
 
 const dimensions = Dimensions.get('window');
-const SCREEN_HEIGHT = dimensions.height;
-const SCREEN_WIDTH  = dimensions.width;
+export const SCREEN_HEIGHT = dimensions.height;
+export const SCREEN_WIDTH  = dimensions.width;
 
 export function generateRandomPosition(width: number, height: number): {top: number, left: number} {
   const top = getRandomArbitrary(0, SCREEN_HEIGHT - height);

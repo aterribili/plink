@@ -7,25 +7,20 @@ import {
   Dimensions,
   TouchableHighlight,
 } from 'react-native';
-
-const HEIGHT = Dimensions.get('window').height;
-const WIDTH = Dimensions.get('window').width;
+import Pause from './Pause';
+import Ball, { BALL_WIDTH, BALL_HEIGHT } from './ball';
+import { generateRandomPosition } from './position';
 
 function generatePosition() {
-  const top = getRandomArbitrary(0, HEIGHT)-40;
-  const left = getRandomArbitrary(0, WIDTH)-40;
+  const position = generateRandomPosition(BALL_WIDTH, BALL_HEIGHT - 30);
 
   return {
     position: 'absolute',
-    top: top >= 0 ? top : 0,
-    left: left >= 0 ? left : 0,
+    top: position.top >= 0 ? position.top : 0,
+    left: position.left >= 0 ? position.left : 0,
     right: 0,
     bottom: 0,
   };
-}
-
-function getRandomArbitrary(min, max) {
-  return Math.random() * (max - min) + min;
 }
 
 let timeouts = [];
@@ -35,6 +30,7 @@ export default class Plink extends Component {
     currentPosition: generatePosition(),
     score: 0,
     error: 0,
+    pause: false,
   };
 
   invalidate() {
@@ -61,61 +57,68 @@ export default class Plink extends Component {
     }, 1000));
   }
 
+  onPause() {
+    const { pause } = this.state;
+    if (pause) {
+      this.setState({ pause: false, }, this.random.bind(this));
+    } else {
+      timeouts.forEach(timeout => clearTimeout(timeout));
+      this.setState({ pause: true, currentPosition: undefined });
+    }
+  }
+
+  renderContainer(isPaused, currentPosition) {
+    if (isPaused) {
+      return (
+        <Pause/>
+      );
+    }
+
+    return (
+      <TouchableHighlight onPress={ this.onPress.bind(this) }>
+      <View>
+      {currentPosition &&
+        <Ball position={ currentPosition }/>
+      }
+      </View>
+      </TouchableHighlight>
+    );
+  }
+
   render() {
-    const { currentPosition, score, error } = this.state;
+    const { pause, currentPosition, score, error } = this.state;
     return (
       <View style={ { flex: 1 } }>
-        <Text style={ styles.text }>Score: {score}</Text>
+        <View style={ styles.header }>
         <Text style={ styles.errors }>Error: {error}</Text>
-        <TouchableHighlight onPress={ this.onPress.bind(this) }>
-          <View>
-            {currentPosition &&
-              <Ball position={ currentPosition }/>
-            }
-          </View>
+        <Text style={ styles.text }>Score: {score}</Text>
+        <TouchableHighlight onPress={ this.onPause.bind(this) } style={ styles.pause }>
+          <Text>Pause</Text>
         </TouchableHighlight>
+        </View>
+        <View style={{ flex: 0.9 }}>
+          {this.renderContainer(pause, currentPosition)}
+        </View>
       </View>
     );
   }
 }
 
-class Ball extends Component {
-  render() {
-    const { position } = this.props;
-    const style = StyleSheet.flatten([ styles.ball, position ]);
-    return (<View style={ style }/>);
-  }
-}
-
-Ball.propTypes = {
-  position: PropTypes.shape({
-    position: PropTypes.string.isRequired,
-    top: PropTypes.number.isRequired,
-    left: PropTypes.number.isRequired,
-    bottom: PropTypes.number.isRequired,
-  }),
-};
-
 const styles = StyleSheet.create({
-  ball: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'blue',
+  header: {
+    height: 50,
+    marginTop: 20,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   text: {
-    position: 'absolute',
-    top: 50,
-    left: 10,
-    right: 0,
-    bottom: 0,
+    fontSize: 20,
   },
   errors: {
-    position: 'absolute',
-    top: 70,
-    left: 10,
-    right: 0,
-    bottom: 0,
+    color: 'red',
+    fontSize: 16,
   }
 });
 

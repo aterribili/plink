@@ -1,16 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import {
   View,
-  Animated,
-  Text,
   StyleSheet,
-  Dimensions,
   TouchableHighlight,
 } from 'react-native';
 import Header from './header';
 import Pause from './Pause';
 import Ball, { BALL_WIDTH, BALL_HEIGHT } from './ball';
-import { SCREEN_WIDTH, generateRandomPosition, SCREEN_HEIGHT } from './position';
+import { generateRandomPosition } from './position';
 
 const STATUSBAR_HEIGHT = 20;
 const HEADER_HEIGHT = 50;
@@ -82,11 +79,11 @@ export default class Plink extends Component {
 
     return (
       <TouchableHighlight onPress={ this.onPress.bind(this) }>
-      <View>
-      {currentPosition &&
-        <Ball position={ currentPosition }/>
-      }
-      </View>
+        <View>
+          {currentPosition &&
+            <Ball position={ currentPosition }/>
+          }
+        </View>
       </TouchableHighlight>
     );
   }

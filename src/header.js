@@ -17,7 +17,11 @@ export default class Header extends Component {
       <View style={ containerStyle }>
         <Text style={ styles.errorCount }>Errors: {errorCount}</Text>
         <Text style={ styles.scoreCount }>Score: {scoreCount}</Text>
-        <TouchableHighlight onPress={ onPressPause.bind() } style={ styles.pause }>
+        <TouchableHighlight
+          onPress={ onPressPause.bind() }
+          style={ styles.pause }
+          underlayColor={ 'rgba(100,100,100,0)' }
+        >
           <Text>Pause</Text>
         </TouchableHighlight>
       </View>

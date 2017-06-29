@@ -42,23 +42,35 @@ export default class Plink extends Component {
   }
 
   onError() {
-    const { error } = this.state;
-    this.setState({ error: error + 1});
-    this.invalidate();
+    const { error, score } = this.state;
+
+    if (error > score) {
+      this.setState({ score: 0, error: 0, currentPosition: generatePosition()}, () => {
+        alert('Você perdeu, seu número de erros foi maior que acertos!');
+      });
+    } else {
+      this.setState({ error: error + 1});
+      this.invalidate();
+    }
   }
 
   onPress() {
     const { score } = this.state;
+
     this.setState({ score: score + 1 }, this.invalidate.bind(this));
   }
 
   random() {
+    const { score } = this.state;
+    const currentInterval = 1000 - (score * 10);
+
     timeouts.push(setTimeout(() => {
       this.setState({ currentPosition: generatePosition() }, () => {
-        timeouts.push(setTimeout(this.onError.bind(this), 1000));
+        timeouts.push(setTimeout(this.onError.bind(this), currentInterval));
       })
-    }, 1000));
+    }, currentInterval));
   }
+
 
   onPause() {
     const { pause } = this.state;
